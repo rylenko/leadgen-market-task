@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	uri := "postgresql://admin:adminpwd@db:5432/db"
+	uri := "postgresql://admin:adminpwd@pg:5432/db"
 
 	// Open buildings repository.
 	repository, err := pgx.OpenBuildingRepositoryImpl(context.Background(), uri)
