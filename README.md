@@ -11,7 +11,11 @@ Ideally, they should be added to .gitignore. I didn't add them to make it easier
 # Structure brief
 
 ./cmd/gin-pgx-api: A program that parses a database configuration file, opens a connection to the database based on the config and starts the service. In short, it is a something like launcher.
+
 ./internal/domain: Domain models.
+
 ./internal/logic: Business logic, service interface, repository interface.
+
 ./internal/ginapi: API based on Gin framework.
+
 ./internal/pgxrepo: Repository implementation. `pgxpool` is used.
