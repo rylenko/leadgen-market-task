@@ -32,6 +32,8 @@ func useHandlers(
 		buildingService logic.BuildingService) {
 	// Building handlers.
 	engine.GET("/buildings", createBuildingsGettingHandler(ctx, buildingService))
+	engine.POST(
+		"/buildings", createBuildingsCreationHandler(ctx, buildingService))
 }
 
 // Adds all middlewares to the passed engine.

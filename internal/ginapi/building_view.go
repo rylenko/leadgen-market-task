@@ -4,19 +4,20 @@ import "github.com/rylenko/leadgen-market-task/internal/domain"
 
 // Building JSON view to make responses.
 type buildingView struct {
-	id int64            `json:"id"`
-	name string         `json:"name"`
-	city string         `json:"city"`
-	handoverYear uint64 `json:"handover_year"`
-	floorsCount uint64  `json:"floors_count"`
+	Id int64            `json:"id"`
+	Name string         `json:"name"`
+	City string         `json:"city"`
+	HandoverYear uint64 `json:"handover_year"`
+	FloorsCount uint64  `json:"floors_count"`
 }
 
+// Gets building view from building domain model.
 func getBuildingView(building *domain.Building) *buildingView {
 	return &buildingView{
-		id: building.Id,
-		name: building.Info.Name,
-		city: building.Info.City,
-		handoverYear: building.Info.HandoverYear,
-		floorsCount: building.Info.FloorsCount,
+		Id: building.Id,
+		Name: building.Info.Name,
+		City: building.Info.City,
+		HandoverYear: building.Info.HandoverYear,
+		FloorsCount: building.Info.FloorsCount,
 	}
 }

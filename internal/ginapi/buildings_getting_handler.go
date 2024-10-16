@@ -42,8 +42,8 @@ func createBuildingsGettingHandler(
 // Extracts building filter values from passed context or returns an error if
 // at least one query contains invalid value.
 func extractFilters(c *gin.Context) (*logic.BuildingFilters, error) {
-	// Parse name filter.
-	nameFilter := extractStringFilter(c, "name")
+	// Parse city filter.
+	cityFilter := extractStringFilter(c, "city")
 
 	// Parse handover year filter.
 	handoverYearFilter, err := extractUInt64Filter(c, "handover_year")
@@ -58,7 +58,7 @@ func extractFilters(c *gin.Context) (*logic.BuildingFilters, error) {
 	}
 
 	return logic.NewBuildingFilters(
-		nameFilter, handoverYearFilter, floorsCountFilter), nil
+		cityFilter, handoverYearFilter, floorsCountFilter), nil
 }
 
 func extractStringFilter(c *gin.Context, name string) *string {
