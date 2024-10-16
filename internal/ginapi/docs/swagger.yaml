@@ -1,5 +1,21 @@
 basePath: /api/v1
 definitions:
+  ginapi.BuildingBody:
+    properties:
+      city:
+        type: string
+      floors_count:
+        type: integer
+      handover_year:
+        type: integer
+      name:
+        type: string
+    required:
+    - city
+    - floors_count
+    - handover_year
+    - name
+    type: object
   ginapi.BuildingView:
     properties:
       city:
@@ -35,11 +51,56 @@ info:
   version: "1.0"
 paths:
   /buildings:
+    get:
+      consumes:
+      - application/json
+      description: Gets all buildings according to passed filter paramters
+      operationId: getall-buildings
+      parameters:
+      - description: city filter
+        in: query
+        name: city
+        type: string
+      - description: handover year filter
+        in: query
+        name: handover_year
+        type: integer
+      - description: floors count filter
+        in: query
+        name: floors_count
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ginapi.BuildingView'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ginapi.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ginapi.Error'
+      summary: Gets all buildings
+      tags:
+      - building
     post:
       consumes:
       - application/json
       description: Creates a new building using passed data
       operationId: create-building
+      parameters:
+      - description: Create building
+        in: body
+        name: building
+        required: true
+        schema:
+          $ref: '#/definitions/ginapi.BuildingBody'
       produces:
       - application/json
       responses:

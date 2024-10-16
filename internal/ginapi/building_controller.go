@@ -25,21 +25,22 @@ type BuildingController struct {
 // @Tags        building
 // @Accept      json
 // @Produce     json
+// @Param       building                                  body     BuildingBody true "Create building"
 // @Success     201                                       {object} BuildingView
 // @Failure     400                                       {object} Error
 // @Failure     500                                       {object} Error
 // @Router      /buildings                                [post]
 func (controller *BuildingController) Create(c *gin.Context) {
-	var data BuildingInput
+	var body BuildingBody
 
-	// Try to bind creaetion data to structure.
-	if err := c.ShouldBindJSON(&data); err != nil {
+	// Try to bind creation data to body structure.
+	if err := c.ShouldBindJSON(&body); err != nil {
 		NewError(http.StatusBadRequest, err.Error()).Push(c)
 		return
 	}
 
 	// Use service to create a new building.
-	building, err := controller.service.Create(controller.ctx, data.toInfo())
+	building, err := controller.service.Create(controller.ctx, body.toInfo())
 	if err != nil {
 		c.Error(err)
 		NewError(http.StatusInternalServerError, "internal error").Push(c)
@@ -52,7 +53,21 @@ func (controller *BuildingController) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, view)
 }
 
-// Gets all buildings from service repository according to query filters.
+// GetAll godoc
+//
+// @Summary     Gets all buildings
+// @Description Gets all buildings according to passed filter paramters
+// @ID          getall-buildings
+// @Tags        building
+// @Accept      json
+// @Produce     json
+// @Param       city                                                     query    string       false "city filter"
+// @Param       handover_year                                            query    int          false "handover year filter"
+// @Param       floors_count                                             query    int          false "floors count filter"
+// @Success     200                                                      {array}  BuildingView
+// @Failure     400                                                      {object} Error
+// @Failure     500                                                      {object} Error
+// @Router      /buildings                                               [get]
 func (controller *BuildingController) GetAll(c *gin.Context) {
 	// Try to extract building filters from context.
 	filters, err := extractFilters(c)
@@ -89,7 +104,7 @@ func NewBuildingController(
 }
 
 // Input JSON model to create or update buildings.
-type BuildingInput struct {
+type BuildingBody struct {
 	Name string         `json:"name" binding:"required"`
 	City string         `json:"city" binding:"required"`
 	HandoverYear uint64 `json:"handover_year" binding:"required"`
@@ -97,7 +112,7 @@ type BuildingInput struct {
 }
 
 // Converts JSON input to building information domain model.
-func (input *BuildingInput) toInfo() *domain.BuildingInfo {
+func (input *BuildingBody) toInfo() *domain.BuildingInfo {
 	return domain.NewBuildingInfo(
 		input.Name, input.City, input.HandoverYear, input.FloorsCount)
 }

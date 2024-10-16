@@ -41,7 +41,7 @@ func Launch(
 
 	// Create, fill engine with middlewares and handlers and run it.
 	engine := gin.Default()
-	addMiddlewares(engine)
+	// addMiddlewares(engine)
 
 	// Add v1 API controllers.
 	v1group := engine.Group("/api/v1")
@@ -49,6 +49,8 @@ func Launch(
 
 	// Add swagger controller.
 	addSwaggerController(engine)
+
+	log.Printf("before run")
 
 	// Run engine on accepted address components.
 	return engine.Run(addr...)
@@ -71,9 +73,9 @@ func addBuildingController(
 }
 
 // Adds all middlewares to the passed engine.
-func addMiddlewares(engine *gin.Engine) {
-	engine.Use(printErrorsMiddleware)
-}
+// func addMiddlewares(engine *gin.Engine) {
+	// engine.Use(printErrorsMiddleware)
+// }
 
 // Adds swagger controller to the engine.
 func addSwaggerController(engine *gin.Engine) {
@@ -81,12 +83,10 @@ func addSwaggerController(engine *gin.Engine) {
 }
 
 // Middleware to log context errors.
-func printErrorsMiddleware(c *gin.Context) {
-	c.Next()
+// func printErrorsMiddleware(c *gin.Context) {
+	// c.Next()
 
-	if len(c.Errors) > 0 {
-		for _, err := range c.Errors {
-			log.Printf("Error: %v", err)
-		}
-	}
-}
+	// for _, err := range c.Errors {
+		// log.Printf("Error: %v", err)
+	// }
+// }

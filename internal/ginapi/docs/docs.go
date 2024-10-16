@@ -25,6 +25,63 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/buildings": {
+            "get": {
+                "description": "Gets all buildings according to passed filter paramters",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "building"
+                ],
+                "summary": "Gets all buildings",
+                "operationId": "getall-buildings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "city filter",
+                        "name": "city",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "handover year filter",
+                        "name": "handover_year",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "floors count filter",
+                        "name": "floors_count",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ginapi.BuildingView"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ginapi.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ginapi.Error"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Creates a new building using passed data",
                 "consumes": [
@@ -38,6 +95,17 @@ const docTemplate = `{
                 ],
                 "summary": "Creates a new building",
                 "operationId": "create-building",
+                "parameters": [
+                    {
+                        "description": "Create building",
+                        "name": "building",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ginapi.BuildingBody"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
@@ -62,6 +130,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "ginapi.BuildingBody": {
+            "type": "object",
+            "required": [
+                "city",
+                "floors_count",
+                "handover_year",
+                "name"
+            ],
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "floors_count": {
+                    "type": "integer"
+                },
+                "handover_year": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "ginapi.BuildingView": {
             "type": "object",
             "properties": {

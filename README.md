@@ -8,6 +8,16 @@ Database container config: ./.env; The environment file is passed to the docker 
 
 Ideally, they should be added to .gitignore. I didn't add them to make it easier for you to run.
 
+# Run
+
+Docker:
+
+```
+$ docker-compose up --build
+```
+
+After that, you can use swagger via `http://localhost:8000/swagger/index.html`.
+
 # Structure brief
 
 ./cmd/gin-pgx-api: A program that parses a database configuration file, opens a connection to the database based on the config and starts the service. In short, it is a something like launcher.
