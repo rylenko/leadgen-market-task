@@ -9,7 +9,7 @@ import (
 
 	"github.com/rylenko/leadgen-market-task/internal/domain"
 	"github.com/rylenko/leadgen-market-task/internal/logic"
-	"github.com/rylenko/leadgen-market-task/internal/pgxrepo"
+	"github.com/rylenko/leadgen-market-task/internal/pgx"
 )
 
 const (

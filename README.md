@@ -18,4 +18,4 @@ Ideally, they should be added to .gitignore. I didn't add them to make it easier
 
 ./internal/ginapi: API based on Gin framework.
 
-./internal/pgxrepo: Repository implementation. `pgxpool` is used.
+./internal/pgx: Repository implementation. `pgxpool` is used.

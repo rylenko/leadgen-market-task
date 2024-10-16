@@ -5,5 +5,5 @@ use (
 	./internal/domain
 	./internal/ginapi
 	./internal/logic
-	./internal/pgxrepo
+	./internal/pgx
 )

@@ -3,9 +3,9 @@ module github.com/rylenko/leadgen-market-task/cmd/gin-pgx-api
 go 1.22.5
 
 require (
-	github.com/rylenko/leadgen-market-task/internal/domain v0.0.0-20241016061444-911dacdffed6
-	github.com/rylenko/leadgen-market-task/internal/logic v0.0.0-20241016061444-911dacdffed6
-	github.com/rylenko/leadgen-market-task/internal/pgx v0.0.0-20241016061444-911dacdffed6
+	github.com/rylenko/leadgen-market-task/internal/domain v0.0.0-20241016092906-ddf83f5dddcb
+	github.com/rylenko/leadgen-market-task/internal/logic v0.0.0-20241016092906-ddf83f5dddcb
+	github.com/rylenko/leadgen-market-task/internal/pgx v0.0.0-20241016081304-c4097dd7ef6e
 )
 
 require (
