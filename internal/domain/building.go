@@ -12,9 +12,9 @@ type Building struct {
 func NewBuilding(
 		name string, city string, handoverYear, floorsCount uint16) *Building {
 	return &Building{
-		name: name,
-		city: city,
-		handoverYear: handoverYear,
-		floorsCount: floorsCount,
+		Name: name,
+		City: city,
+		HandoverYear: handoverYear,
+		FloorsCount: floorsCount,
 	}
 }
