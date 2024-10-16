@@ -1,6 +1,8 @@
 services:
   gin-pgx-api:
-    build: ./cmd/gin-pgx-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     container_name: gin-pgx-api
     depends_on:
       - pg
@@ -10,6 +12,7 @@ services:
   pg:
     image: postgres
     container_name: repository
+    env_file: ./.env
     volumes:
       - pgdata:/var/lib/postgresql/data
     expose:

@@ -1,4 +1,4 @@
-package pgx
+package pgxrepo
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 const (
 	createCityIndexStatement = `
 		CREATE INDEX IF NOT EXISTS building_city_index
-			ON building (city);
+			ON building USING HASH (city);
 	`
 
 	createFloorsCountIndexStatement = `
@@ -77,16 +77,20 @@ func (repository *BuildingRepositoryImpl) GetAll(
 	// Scan rows to the buildings slice.
 	for rows.Next() {
 		// Try to scan a building.
-		var building domain.Building
+		var (
+			building domain.Building
+			info domain.BuildingInfo
+		)
 		err := rows.Scan(
 			&building.Id,
-			&building.Info.Name,
-			&building.Info.City,
-			&building.Info.HandoverYear,
-			&building.Info.FloorsCount)
+			&info.Name,
+			&info.City,
+			&info.HandoverYear,
+			&info.FloorsCount)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan a building: %v", err)
 		}
+		building.Info = &info
 
 		// Append scanned building to the slice.
 		buildings = append(buildings, &building)
@@ -214,5 +218,8 @@ func buildGetAllQuery(
 	if len(conditions) > 0 {
 		query += " WHERE " + strings.Join(conditions, " AND ")
 	}
+
+	// Close a query and return it.
+	query += ";"
 	return query, args
 }

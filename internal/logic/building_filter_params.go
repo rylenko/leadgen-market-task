@@ -7,8 +7,8 @@ package logic
 // parameter is not set.
 type BuildingFilterParams struct {
 	City *string
-	HandoverYear *uint16
-	FloorsCount *uint16
+	HandoverYear *uint64
+	FloorsCount *uint64
 }
 
 // NewBuildingFilterParams creates a new instance of filter parameters
@@ -16,7 +16,7 @@ type BuildingFilterParams struct {
 //
 //
 func NewBuildingFilterParams(
-		city *string, handoverYear, floorsCount *uint16) *BuildingFilterParams {
+		city *string, handoverYear, floorsCount *uint64) *BuildingFilterParams {
 	return &BuildingFilterParams{
 		City: city,
 		HandoverYear: handoverYear,

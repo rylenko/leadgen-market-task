@@ -1,0 +1,7 @@
+{
+	"host": "pg",
+	"port": 5432,
+	"user": "admin",
+	"password": "adminpwd",
+	"db": "db"
+}
