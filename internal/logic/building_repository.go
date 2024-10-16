@@ -12,8 +12,7 @@ type BuildingRepository interface {
 	// GetAll must get all buildings according to the passed filter parameters or
 	// return an error.
 	GetAll(
-		ctx context.Context,
-		filterParams *BuildingFilterParams) ([]*domain.Building, error)
+		ctx context.Context, filters *BuildingFilters) ([]*domain.Building, error)
 
 	// Insert must insert a structure to the repository or return an error.
 	Insert(

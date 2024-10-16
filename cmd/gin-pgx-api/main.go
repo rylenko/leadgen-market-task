@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/rylenko/leadgen-market-task/internal/domain"
+	"github.com/rylenko/leadgen-market-task/internal/ginapi"
 	"github.com/rylenko/leadgen-market-task/internal/logic"
 	"github.com/rylenko/leadgen-market-task/internal/pgx"
 )
@@ -80,25 +80,24 @@ func main() {
 	// Create a new instance of building service.
 	service := logic.NewBuildingServiceImpl(repository)
 
-	// Try to init build service.
-	if err := service.Init(context.Background()); err != nil {
-		log.Fatalf("failed to initialize build service: %v", err)
+	if err := ginapi.Launch(context.Background(), service, ":8000"); err != nil {
+		log.Fatalf("failed to launch API: %v", err)
 	}
 
-	info := domain.NewBuildingInfo("info 333", "unknown", 2031, 1)
-	building, err := service.Create(context.Background(), info)
-	if err != nil {
-		log.Fatalf("failed to create %+v: %v", info, err)
-	}
-	fmt.Printf("info created: %d, %+v\n", building.Id, building.Info)
+	// info := domain.NewBuildingInfo("info 333", "unknown", 2031, 1)
+	// building, err := service.Create(context.Background(), info)
+	// if err != nil {
+		// log.Fatalf("failed to create %+v: %v", info, err)
+	// }
+	// fmt.Printf("info created: %d, %+v\n", building.Id, building.Info)
 
-	var v uint64 = 2031
-	filterParams := logic.NewBuildingFilterParams(nil, &v, nil)
-	buildings, err := service.GetAll(context.Background(), filterParams)
-	if err != nil {
-		log.Fatalf("failed to get all %+v: %v", filterParams, err)
-	}
-	for _, b := range buildings {
-		fmt.Printf("building: %d, %+v\n", b.Id, b.Info)
-	}
+	// var v uint64 = 2031
+	// filterParams := logic.NewBuildingFilterParams(nil, &v, nil)
+	// buildings, err := service.GetAll(context.Background(), filterParams)
+	// if err != nil {
+		// log.Fatalf("failed to get all %+v: %v", filterParams, err)
+	// }
+	// for _, b := range buildings {
+		// fmt.Printf("building: %d, %+v\n", b.Id, b.Info)
+	// }
 }

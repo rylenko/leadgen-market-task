@@ -58,19 +58,17 @@ func (repository *BuildingRepositoryImpl) Close() {
 
 func (repository *BuildingRepositoryImpl) GetAll(
 		ctx context.Context,
-		filterParams *logic.BuildingFilterParams) ([]*domain.Building, error) {
+		filters *logic.BuildingFilters) ([]*domain.Building, error) {
 	var buildings []*domain.Building
 
 	// Build query with its arguments.
-	query, args := buildGetAllQuery(filterParams)
+	query, args := buildGetAllQuery(filters)
 
 	// Try to execute query.
 	rows, err := repository.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"failed to get all buildings with filter parameters %+v: %v",
-			filterParams,
-			err)
+			"failed to get all buildings with filter parameters %+v: %v", filters, err)
 	}
 	defer rows.Close()
 
@@ -189,29 +187,29 @@ func OpenBuildingRepositoryImpl(
 
 // Builds query to get all buildings according to filter parameters.
 func buildGetAllQuery(
-		filterParams *logic.BuildingFilterParams) (query string, args []any) {
+		filters *logic.BuildingFilters) (query string, args []any) {
 	query = getAllQueryPrefix
 	var conditions []string
 
 	// Add city filter if parameter is not nil.
-	if filterParams.City != nil {
+	if filters.City != nil {
 		condition := fmt.Sprintf("city = $%d", len(args) + 1)
 		conditions = append(conditions, condition)
-		args = append(args, *filterParams.City)
+		args = append(args, *filters.City)
 	}
 
 	// Add handover year filter if parameter is not nil.
-	if filterParams.HandoverYear != nil {
+	if filters.HandoverYear != nil {
 		condition := fmt.Sprintf("handover_year = $%d", len(args) + 1)
 		conditions = append(conditions, condition)
-		args = append(args, *filterParams.HandoverYear)
+		args = append(args, *filters.HandoverYear)
 	}
 
 	// Add floors count filter if parameter is not nil.
-	if filterParams.FloorsCount != nil {
+	if filters.FloorsCount != nil {
 		condition := fmt.Sprintf("floors_count = $%d", len(args) + 1)
 		conditions = append(conditions, condition)
-		args = append(args, *filterParams.FloorsCount)
+		args = append(args, *filters.FloorsCount)
 	}
 
 	// Join conditions with query prefix.

@@ -8,6 +8,8 @@ services:
       - pg
     expose:
       - 8000
+    ports:
+      - 8000:8000
 
   pg:
     image: postgres

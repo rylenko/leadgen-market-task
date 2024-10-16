@@ -29,13 +29,12 @@ func (service *BuildingServiceImpl) Create(
 // GetAll gets all buildings according to the passed filter parameters or
 // returns and error.
 func (service *BuildingServiceImpl) GetAll(
-		ctx context.Context,
-		filterParams *BuildingFilterParams) ([]*domain.Building, error) {
+		ctx context.Context, filters *BuildingFilters) ([]*domain.Building, error) {
 	// Try to get all buildings using repository and accepted filter parameters.
-	buildings, err := service.repository.GetAll(ctx, filterParams)
+	buildings, err := service.repository.GetAll(ctx, filters)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"failed to get all buildings with filter params %+v: %v", filterParams, err)
+			"failed to get all buildings with filter params %+v: %v", filters, err)
 	}
 
 	return buildings, nil
