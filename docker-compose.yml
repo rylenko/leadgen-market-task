@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  build: ./cmd/gin-pgx-api
+  container_name: gin-pgx-api
+  depends_on:
+  - db
+  expose:
+  - 8000
+
+repository:
+  image: postgres
+  container_name: repository
+  volumes:
+  - pgdata:/var/lib/postgresql/data
+  expose:
+  - 5432
+
+volumes:
+  pgdata:
