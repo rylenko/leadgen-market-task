@@ -1,0 +1,64 @@
+basePath: /api/v1
+definitions:
+  ginapi.BuildingView:
+    properties:
+      city:
+        type: string
+      floors_count:
+        type: integer
+      handover_year:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  ginapi.Error:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: rylenko@tuta.io
+    name: rylenko
+    url: http://github.com/rylenko
+  description: Swagger API of Leadgen Market Task
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Leadgen Market Task
+  version: "1.0"
+paths:
+  /buildings:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new building using passed data
+      operationId: create-building
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/ginapi.BuildingView'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ginapi.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ginapi.Error'
+      summary: Creates a new building
+      tags:
+      - building
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

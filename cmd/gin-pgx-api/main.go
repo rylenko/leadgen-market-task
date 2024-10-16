@@ -83,21 +83,4 @@ func main() {
 	if err := ginapi.Launch(context.Background(), service, ":8000"); err != nil {
 		log.Fatalf("failed to launch API: %v", err)
 	}
-
-	// info := domain.NewBuildingInfo("info 333", "unknown", 2031, 1)
-	// building, err := service.Create(context.Background(), info)
-	// if err != nil {
-		// log.Fatalf("failed to create %+v: %v", info, err)
-	// }
-	// fmt.Printf("info created: %d, %+v\n", building.Id, building.Info)
-
-	// var v uint64 = 2031
-	// filterParams := logic.NewBuildingFilterParams(nil, &v, nil)
-	// buildings, err := service.GetAll(context.Background(), filterParams)
-	// if err != nil {
-		// log.Fatalf("failed to get all %+v: %v", filterParams, err)
-	// }
-	// for _, b := range buildings {
-		// fmt.Printf("building: %d, %+v\n", b.Id, b.Info)
-	// }
 }
