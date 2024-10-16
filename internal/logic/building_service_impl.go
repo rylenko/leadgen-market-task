@@ -1,6 +1,11 @@
 package logic
 
-import "github.com/rylenko/leadgen-market-task/internal/domain"
+import (
+	"context"
+	"fmt"
+
+	"github.com/rylenko/leadgen-market-task/internal/domain"
+)
 
 // BuildingService implementation that interacts with the repository to work
 // with data.
@@ -9,21 +14,25 @@ type BuildingServiceImpl struct {
 }
 
 // Create inserts passed building to the database or returns an error.
-func (service *BuildingServiceImpl) Create(building *domain.Building) error {
+func (service *BuildingServiceImpl) Create(
+		ctx context.Context, info *domain.BuildingInfo) (*domain.Building, error) {
 	// Try to insert accepted building to the repository.
-	if err := service.repository.Insert(building); err != nil {
-		return fmt.Errorf("failed to insert building to the repository: %v", err)
+	building, err := service.repository.Insert(ctx, info)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to insert building to the repository: %v", err)
 	}
 
-	return nil
+	return building, nil
 }
 
 // GetAll gets all buildings according to the passed filter parameters or
 // returns and error.
 func (service *BuildingServiceImpl) GetAll(
-		filterParams *BuildingFilterParams) (domain.Buildings, error) {
+		ctx context.Context,
+		filterParams *BuildingFilterParams) ([]*domain.Building, error) {
 	// Try to get all buildings using repository and accepted filter parameters.
-	buildings, err := service.repository.GetAll(filterParams)
+	buildings, err := service.repository.GetAll(ctx, filterParams)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to get all buildings with filter params %+v: %v", filterParams, err)
@@ -33,9 +42,9 @@ func (service *BuildingServiceImpl) GetAll(
 }
 
 // Initializes service before work. For example, initializes repository.
-func (service *BuildingServiceImpl) Init() error {
+func (service *BuildingServiceImpl) Init(ctx context.Context) error {
 	// Try to initialize service repository.
-	if err := service.repository.Init(); err != nil {
+	if err := service.repository.Init(ctx); err != nil {
 		return fmt.Errorf("failed to init repository: %v", err)
 	}
 
@@ -45,7 +54,7 @@ func (service *BuildingServiceImpl) Init() error {
 // NewBuildingServiceImpl creates a new instance of building service
 // implementation using passed repository.
 func NewBuildingServiceImpl(
-		repository BuildingRepository) *BuildingRepository {
+		repository BuildingRepository) *BuildingServiceImpl {
 	return &BuildingServiceImpl{
 		repository: repository,
 	}

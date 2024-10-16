@@ -1,41 +1,49 @@
 package pgx
 
 import (
+	"context"
+	"fmt"
+	"strings"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rylenko/leadgen-market-task/internal/domain"
 	"github.com/rylenko/leadgen-market-task/internal/logic"
 )
 
 const (
-	createCityIndexStatement = ```
+	createCityIndexStatement = `
 		CREATE INDEX IF NOT EXISTS building_city_index
 			ON building (city);
-	```
+	`
 
-	createFloorsCountIndexStatement = ```
+	createFloorsCountIndexStatement = `
 		CREATE INDEX IF NOT EXISTS building_floors_count_index
-			ON building (floors_count)
-	```
+			ON building (floors_count);
+	`
 
-	createHandoverYearIndexStatement = ```
+	createHandoverYearIndexStatement = `
 		CREATE INDEX IF NOT EXISTS building_handover_year_index
 			ON building (handover_year);
-	```
+	`
 
-	createTableStatement = ```
+	createTableStatement = `
 		CREATE TABLE IF NOT EXISTS building (
-			id INTEGER PRIMARY KEY,
+			id SERIAL PRIMARY KEY,
 			name TEXT NOT NULL,
 			city TEXT NOT NULL,
-			handover_year INTEGER NOT NULL,
-			floors_count INTEGER NOT NULL
+			handover_year INTEGER NOT NULL CHECK (handover_year >= 0),
+			floors_count INTEGER NOT NULL CHECK (floors_count >= 0)
 		);
-	```
+	`
 
-	insertQuery = ```
+	getAllQueryPrefix = `
+		SELECT id, name, city, handover_year, floors_count FROM building
+	`
+
+	insertQuery = `
 		INSERT INTO building (name, city, handover_year, floors_count)
 			VALUES ($1, $2, $3, $4) RETURNING (id);
-	```
+	`
 )
 
 // BuildingRepositoryImpl is a pgx implementation of buildings repository.
@@ -43,9 +51,53 @@ type BuildingRepositoryImpl struct {
 	pool *pgxpool.Pool
 }
 
-func (repository *BuildingRepositoryImpl) GetAll(
-		filterParams *logic.BuildingFilterParams) (domain.Buildings, error) {
+// Closes opened repository implementation.
+func (repository *BuildingRepositoryImpl) Close() {
+	repository.pool.Close()
+}
 
+func (repository *BuildingRepositoryImpl) GetAll(
+		ctx context.Context,
+		filterParams *logic.BuildingFilterParams) ([]*domain.Building, error) {
+	var buildings []*domain.Building
+
+	// Build query with its arguments.
+	query, args := buildGetAllQuery(filterParams)
+
+	// Try to execute query.
+	rows, err := repository.pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to get all buildings with filter parameters %+v: %v",
+			filterParams,
+			err)
+	}
+	defer rows.Close()
+
+	// Scan rows to the buildings slice.
+	for rows.Next() {
+		// Try to scan a building.
+		var building domain.Building
+		err := rows.Scan(
+			&building.Id,
+			&building.Info.Name,
+			&building.Info.City,
+			&building.Info.HandoverYear,
+			&building.Info.FloorsCount)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan a building: %v", err)
+		}
+
+		// Append scanned building to the slice.
+		buildings = append(buildings, &building)
+	}
+
+	// Check rows error after iterations completion.
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error after rows iteration: %v", err)
+	}
+
+	return buildings, nil
 }
 
 // Init creates database table and indexes if they are not exists.
@@ -75,23 +127,18 @@ func (repository *BuildingRepositoryImpl) Init(ctx context.Context) error {
 
 // Insert inserts a new building to the database.
 func (repository *BuildingRepositoryImpl) Insert(
-		building *domain.Building) (id int64, err error) {
+		ctx context.Context, info *domain.BuildingInfo) (*domain.Building, error) {
 	// Execute insertion query in the database.
 	row := repository.pool.QueryRow(
-		ctx,
-		insertQuery,
-		building.Name,
-		building.City,
-		building.HandoverYear,
-		building.FloorsCount)
+		ctx, insertQuery, info.Name, info.City, info.HandoverYear, info.FloorsCount)
 
 	// Scan returned id of a new building in the database.
 	var id int64
-	if _, err := row.Scan(&id); err != nil {
-		return id, fmt.Errorf("failed to scan id of a new building: %v", err)
+	if err := row.Scan(&id); err != nil {
+		return nil, fmt.Errorf("failed to scan id of a new building: %v", err)
 	}
 
-	return id, nil
+	return domain.NewBuilding(id, info), nil
 }
 
 // Creates city index in the database.
@@ -122,9 +169,50 @@ func (repository *BuildingRepositoryImpl) createTable(
 	return err
 }
 
-// Creates a new instance of pgx building repository implementation.
-func NewBuildingRepositoryImpl(pool *pgxpool.Pool) *BuildingRepositoryImpl {
-	return &BuildingRepositoryImpl{
-		pool: pool,
+// Opens a new connection to building repository.
+func OpenBuildingRepositoryImpl(
+		ctx context.Context, uri string) (*BuildingRepositoryImpl, error) {
+	// Try to open a new database connection pool.
+	pool, err := pgxpool.New(ctx, uri)
+	if err != nil {
+		return nil, err
 	}
+
+	// Create a new database wrapper instance.
+	impl := &BuildingRepositoryImpl{pool: pool}
+	return impl, nil
+}
+
+// Builds query to get all buildings according to filter parameters.
+func buildGetAllQuery(
+		filterParams *logic.BuildingFilterParams) (query string, args []any) {
+	query = getAllQueryPrefix
+	var conditions []string
+
+	// Add city filter if parameter is not nil.
+	if filterParams.City != nil {
+		condition := fmt.Sprintf("city = $%d", len(args) + 1)
+		conditions = append(conditions, condition)
+		args = append(args, *filterParams.City)
+	}
+
+	// Add handover year filter if parameter is not nil.
+	if filterParams.HandoverYear != nil {
+		condition := fmt.Sprintf("handover_year = $%d", len(args) + 1)
+		conditions = append(conditions, condition)
+		args = append(args, *filterParams.HandoverYear)
+	}
+
+	// Add floors count filter if parameter is not nil.
+	if filterParams.FloorsCount != nil {
+		condition := fmt.Sprintf("floors_count = $%d", len(args) + 1)
+		conditions = append(conditions, condition)
+		args = append(args, *filterParams.FloorsCount)
+	}
+
+	// Join conditions with query prefix.
+	if len(conditions) > 0 {
+		query += " WHERE " + strings.Join(conditions, " AND ")
+	}
+	return query, args
 }

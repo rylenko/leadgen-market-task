@@ -1,7 +1,5 @@
 package logic
 
-import "github.com/rylenko/leadgen-market-task/internal/domain"
-
 // BuildingFilterParams contains parameters that are used to select certain
 // buildings from among the others.
 //

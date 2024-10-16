@@ -1,20 +1,16 @@
 package domain
 
-// Building places information about buildings.
+// Building places information about building and other parameters that allow
+// us to distinguish between buildings.
 type Building struct {
-	Name string
-	City string
-	HandoverYear uint16
-	FloorsCount uint16
+	Id int64
+	Info *BuildingInfo
 }
 
-// NewBuilding creates a new instance of Building structure.
-func NewBuilding(
-		name string, city string, handoverYear, floorsCount uint16) *Building {
+// NewBuilding creates a new instance of building structure.
+func NewBuilding(id int64, info *BuildingInfo) *Building {
 	return &Building{
-		Name: name,
-		City: city,
-		HandoverYear: handoverYear,
-		FloorsCount: floorsCount,
+		Id: id,
+		Info: info,
 	}
 }
